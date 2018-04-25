@@ -86,51 +86,110 @@ __webpack_require__(2);
 "use strict";
 
 
-/**
- * Created by Administrator on 2017/4/26.
- */
-{
-    // 2进制0b,8进制0o
-    console.log('B', 503);
-    console.log('o', 503);
-}
-{
-    //是否有尽
-    console.log('is', Number.isFinite(15));
-    console.log('NaN', Number.isFinite(NaN));
-    console.log('1/0', Number.isFinite('true' / 0));
-    console.log('NaN', Number.isNaN(NaN));
-    console.log('NaN', Number.isNaN(0));
-}
-{
-    console.log('25', Number.isInteger(25));
-    console.log('25.0', Number.isInteger(25.0));
-    console.log('25.1', Number.isInteger(25.1));
-    console.log('25', Number.isInteger('25'));
-}
-{
-    // 判断数的上下限2^53次方
-    console.log(Number.MAX_SAFE_INTEGER, Number.MIN_SAFE_INTEGER);
-    console.log('10', Number.isSafeInteger(10));
-    console.log('a', Number.isSafeInteger('a'));
-    console.log('10.1', Number.isSafeInteger(10.1));
-}
-{
-    console.log(4.1, Math.trunc(4.1));
-    console.log(4.9, Math.trunc(4.9));
-}
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+// {
+//     let obj = {
+//         time: '2017-03-11',
+//         name: 'net',
+//         _r: 123
+//     };
+//
+//     let monitor = new Proxy(obj, {
+//         get(target, key) {
+//             return target[key].replace('2017', '2018');
+//         },
+//         set(target, key, value) {
+//             if (key === 'name') {
+//                 return target[key] = value;
+//             } else {
+//                 return target[key];
+//             }
+//         },
+//         has(target, key) {
+//             if (key === 'name') {
+//                 return target[key];
+//             } else {
+//                 return false;
+//             }
+//         },
+//         deleteProperty(target, key) {
+//             if (key.indexOf('_') > -1) {
+//                 delete target[key];
+//                 return true;
+//             } else {
+//                 return target[key];
+//             }
+//         },
+//         ownKeys(target) {
+//             return Object.keys(target).filter(item => item != 'time');
+//         }
+//     });
+//
+//     // console.log('get', monitor.time);
+//     // monitor.time = '2018';
+//     // monitor.name = 'hello';
+//     // console.log('set', monitor.time, monitor.name);
+//     // console.log('has', 'name' in monitor,'time' in monitor);
+//     // delete monitor.time;
+//     // console.log('delete', monitor);
+//     // delete monitor._r;
+//     console.log('ownkeys', Object.keys(monitor));
+// }
+//
+// {
+//     let obj = {
+//         time: '2017-03-11',
+//         name: 'net',
+//         _r: 123
+//     };
+//
+//     // console.log('reflect get', Reflect.get(obj,'time'));
+//     Reflect.set(obj,'name','hello world');
+//     console.log(obj);
+//     console.log(Reflect.has(obj,'name'));
+// }
 
 {
-    console.log('-5', Math.sign(-5));
-    console.log('0', Math.sign(0));
-    console.log('5.1', Math.sign(5.1));
-    console.log('5.1', Math.sign('5.1'));
-    console.log('foo', Math.sign('foo'));
-}
+    var validator = function validator(target, _validator) {
+        return new Proxy(target, {
+            _validator: _validator,
+            set: function set(target, key, value, proxy) {
+                if (target.hasOwnProperty(key)) {
+                    var va = this._validator[key];
+                    if (!!va(value)) {
+                        return Reflect.set(target, key, value, proxy);
+                    } else {
+                        throw Error(key + ' \u4E0D\u80FD\u8BBE\u7F6E');
+                    }
+                } else {
+                    throw Error(key + ' \u4E0D\u5B58\u5728');
+                }
+            }
+        });
+    };
 
-{
-    console.log('-1', Math.cbrt(-1));
-    console.log('8', Math.cbrt(8));
+    var personValidators = {
+        name: function name(val) {
+            return typeof val === 'string';
+        },
+        age: function age(val) {
+            return typeof val === 'number' && val > 18;
+        }
+    };
+
+    var Person = function Person(name, age) {
+        _classCallCheck(this, Person);
+
+        this.name = name;
+        this.age = age;
+        return validator(this, personValidators);
+    };
+
+    var person = new Person('lilei', 30);
+    console.log(person);
+    person.name = 'hello';
+    console.log(person);
 }
 
 /***/ })
